@@ -1,0 +1,29 @@
+graph TD
+    Start([Input Document]) --> Clean[Text Cleaning]
+    Clean --> Category[Category Classification]
+    
+    Category --> Actor[Narrative Actor<br/>Generate evidence-grounded claims]
+    
+    Actor --> Critic[Narrative Critic<br/>Validate claims]
+    
+    Critic --> Valid{Valid?}
+    Valid -->|No| Actor
+    Valid -->|Yes| SubActor[Sub-narrative Actor<br/>Generate child claims]
+    
+    SubActor --> SubCritic[Sub-narrative Critic<br/>Validate child claims]
+    
+    SubCritic --> SubValid{Valid?}
+    SubValid -->|No| SubActor
+    SubValid -->|Yes| Final[Output Results]
+    
+    Final --> End([Complete])
+    
+    style Start fill:#0288d1,stroke:#01579b,stroke-width:2px,color:#fff
+    style End fill:#0288d1,stroke:#01579b,stroke-width:2px,color:#fff
+    style Actor fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    style Critic fill:#d32f2f,stroke:#b71c1c,stroke-width:2px,color:#fff
+    style SubActor fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    style SubCritic fill:#d32f2f,stroke:#b71c1c,stroke-width:2px,color:#fff
+    style Final fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
+    style Category fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#fff
+    style Clean fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#fff
