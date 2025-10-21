@@ -15,20 +15,7 @@ Second, and most critically, the dataset exhibits a severe class imbalance. As s
 \label{fig:narrative_distribution}
 \end{figure*}
 
-\subsection{System Configurations}
-
-To isolate the contributions of our different architectural choices, we define and compare three distinct zero-shot systems. All systems are implemented using the LangGraph framework \cite{langgraph2024} and share the same foundational prompts to ensure a fair comparison.
-
-\begin{enumerate}
-\item \textbf{Naive Baseline (Single-Pass Actor):}
-This configuration represents the most straightforward application of an LLM to the HMLC task. It consists of a single "Actor" agent that performs the classification for each hierarchical level. The output from the agent's first and only pass is taken as the final result. This system serves as our baseline to measure the performance of a standard, non-revising, and non-ensembled LLM classifier. For this configuration, we used gpt-5-nano as the LLM.
-
-\item \textbf{Actor-Critic Pipeline:}
-This system represents our initial effort to improve reliability through self-refinement. It extends the Naive Baseline by adding a "Critic" agent that reviews and validates the Actor's output. If the Critic identifies a flaw, it provides feedback, and the Actor makes a second, revised attempt. This configuration allows us to measure the impact of a single, iterative correction loop. The Actor and Critic agents were both implemented using gpt-5-nano.
-
-\item \textbf{Agora (Multi-Agent Ensemble):}
-This is our proposed framework, designed to achieve robustness through consensus. Instead of refinement, Agora employs a multi-agent ensemble where independent agents classify the text in parallel. Their outputs are then aggregated using a Majority Vote mechanism to determine the final label set. This configuration tests our primary hypothesis that consensus from multiple agents is more effective than the single-agent refinement loop. All agents in the Agora ensemble were implemented using gpt-5-nano.
-\end{enumerate}
+Due to the multi-label nature and severe class imbalance inherent in the dataset, we decided to adopt a zero-shot learning approach. This paradigm avoids dependency on large per-class training counts and is well-suited to handle the long-tail distribution of narratives, making it ideal for this challenging classification task.
 
 \subsection{Hardware Configuration}
 
