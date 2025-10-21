@@ -12,6 +12,13 @@ Our first architectural exploration, the Actor-Critic Pipeline, sought to improv
 
 Our implementation uses the LangGraph framework to structure the process as a cyclical state graph \citep{langgraph2024}. The pipeline configuration is managed by a \texttt{ConfigurableGraphBuilder}, allowing components like validation to be enabled or disabled and different LLMs to be assigned to specific nodes via a YAML file. The workflow proceeds through several stages, as illustrated in Figure~\ref{fig:actor_critic_pipeline}.
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.85\columnwidth]{assets/diagrams/claim_validation_pipeline.svg}
+\caption{Actor-Critic validation pipeline architecture. The system decomposes HMLC into hierarchical stages where a Narrative Actor generates evidence-grounded claims, which are then validated by a Narrative Critic. Feedback loops enable iterative refinement before progressing to sub-narrative classification.}
+\label{fig:actor_critic_pipeline}
+\end{figure}
+
 \subsubsection{Category Classification}
 
 An initial node determines the document's high-level topic (e.g., CC or URW) to focus subsequent stages on the relevant subset of the narrative taxonomy.
