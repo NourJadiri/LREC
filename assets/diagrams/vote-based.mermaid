@@ -1,0 +1,42 @@
+```mermaid.flowchart
+%%{init: {'flowchart': {'htmlLabels': true}, 'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'primaryBorderColor': '#cccccc', 'background': '#ffffff', 'mainBkg': '#ffffff', 'secondBkg': '#ffffff', 'tertiaryColor': '#ffffff'}}}%%
+graph TD
+    Start([Input Document & Prompt]) --> FanOut[Fan-Out:<br/>Distribute to N Agents]
+    
+    FanOut --> Agent1[Agent 1<br/>Independent Classification]
+    FanOut --> Agent2[Agent 2<br/>Independent Classification]
+    FanOut --> Agent3[Agent 3<br/>Independent Classification]
+    FanOut --> AgentDots[...]
+    FanOut --> AgentN[Agent N<br/>Independent Classification]
+    
+    Agent1 --> Agg[Aggregation Node<br/>Vote on Results]
+    Agent2 --> Agg
+    Agent3 --> Agg
+    AgentDots --> Agg
+    AgentN --> Agg
+    
+    Agg --> Strategy{Aggregation<br/>Strategy}
+    
+    Strategy -->|Union| Union[Include labels<br/>from ≥1 agent<br/>High Recall]
+    Strategy -->|Intersection| Inter[Include labels<br/>from ALL agents<br/>High Precision]
+    Strategy -->|Majority| Majority[Include labels<br/>from >N/2 agents<br/>Balanced]
+    
+    Union --> Final[Final Label Set]
+    Inter --> Final
+    Majority --> Final
+    
+    Final --> End([Output])
+    
+    style Start fill:#0288d1,stroke:#01579b,stroke-width:2px,color:#fff
+    style End fill:#0288d1,stroke:#01579b,stroke-width:2px,color:#fff
+    style FanOut fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#fff
+    style Agent1 fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    style Agent2 fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    style Agent3 fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    style AgentDots fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    style AgentN fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    style Agg fill:#d32f2f,stroke:#b71c1c,stroke-width:2px,color:#fff
+    style Union fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
+    style Inter fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
+    style Majority fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
+    style Final fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff

@@ -59,4 +59,11 @@ After all $N$ agents return their individual classifications, an Aggregation nod
 \item \textbf{Majority Vote:} The final label set includes any label proposed by more than half ($> N/2$) of the agents. This strategy provides a robust balance between precision and recall, filtering out stochastic, outlier classifications while retaining a strong consensus.
 \end{itemize}
 
+\begin{figure*}[!ht]
+\centering
+\includegraphics[height=12cm]{assets/diagrams/vote-based.png}
+\caption{Agora multi-agent ensemble architecture. The framework distributes the classification task to $N$ independent agents in parallel (Fan-Out), aggregates their results using a voting mechanism (Fan-In), and produces a final label set based on the chosen aggregation strategy (Union, Intersection, or Majority Vote).}
+\label{fig:vote_based_ensemble}
+\end{figure*}
+
 This ensemble approach directly addresses the single-point-of-failure issue observed in the Actor-Critic pipeline. Instead of relying on one critic's potentially noisy feedback, Agora relies on the statistical robustness of a majority decision, providing a more reliable and conceptually simpler method for improving classification quality.
