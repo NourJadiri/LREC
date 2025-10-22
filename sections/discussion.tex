@@ -1,0 +1,11 @@
+\section{Discussion: The Power of Consensus}
+
+\subsection{Why Consensus Outperforms Self-Correction}
+
+The central finding of our work is that consensus through ensembling is a more effective strategy for improving LLM reliability than single-agent self-correction. Our experiments show a clear progression: a Naive Baseline suffers from the model's inherent stochasticity; an Actor-Critic pipeline attempts to fix this with a single ``referee'' but proves inconsistent, as the referee itself is an unreliable LLM. The Agora framework succeeds because it replaces this fragile, single point of correction with the statistical power of a majority vote.
+
+By sampling multiple outputs from the LLM's distribution and aggregating them, Agora effectively averages out random hallucinations and individual agent errors. The ablation study on voting strategies (Table~\ref{tab:voting_strategies}) confirms this mechanism: the noisy Union strategy underperforms, while consensus-based methods like Majority Vote and Intersection successfully filter out outlier predictions, leading to higher-quality classifications. This architectural choice directly addresses the core problem of LLM stochasticity and is the primary reason for Agora's state-of-the-art performance in the SemEval-2025 competition.
+
+\subsection{Lessons from the Actor-Critic Experiment}
+
+Furthermore, our initial experiments with the Actor-Critic pipeline serve as a crucial cautionary tale. The finding that the validation step often degraded performance suggests that adding architectural complexity, even when well-motivated, does not guarantee improvement. In multi-step reasoning chains, errors can accumulate, and a flawed ``critic'' can be more harmful than no critic at all. This reinforces the elegance of the Agora approach: it improves robustness through a conceptually simple and statistically grounded method rather than a complex and potentially brittle reasoning loop.

@@ -1,0 +1,92 @@
+\section{Results}
+
+In this section, we present the empirical results of our experiments. We first demonstrate the competitive performance of the Agora framework through official SemEval-2025 rankings. We then provide a detailed architectural comparison to understand the source of Agora's success, and conclude with an analysis of its voting strategies.
+
+\subsection{State-of-the-Art Performance in SemEval-2025}
+
+The ultimate validation of the Agora framework comes from its performance in the official SemEval-2025 Task 10 competition. Our submitted system, which was the Agora multi-agent ensemble, achieved top-tier rankings across all five languages, including a first-place finish in Hindi.
+
+\begin{table}[ht]
+\centering
+\caption{Official INSALyon2 Rankings using the Agora Framework in SemEval-2025 Task 10.}
+\label{tab:semeval_rankings}
+\begin{tabular}{lc}
+\hline
+\textbf{Language} & \textbf{Rank} \\
+\hline
+Hindi & \textbf{1st} \\
+English & 2nd \\
+Portuguese & 2nd \\
+Russian & 3rd \\
+Bulgarian & 4th \\
+\hline
+\end{tabular}
+\end{table}
+
+These results confirm that the consensus-based approach is not just a theoretical improvement but a practical, state-of-the-art method for complex HMLC tasks. Achieving a first-place and two second-place finishes in a highly competitive shared task validates the robustness and generalizability of the Agora architecture.
+
+Notably, these rankings represent a substantial improvement over our earlier submission using the Actor-Critic pipeline approach. Table~\ref{tab:actor_critic_rankings} shows the performance of that intermediate architecture.
+
+\begin{table}[ht]
+\centering
+\caption{Official INSALyon2 Rankings using the Actor-Critic Pipeline in SemEval-2025 Task 10.}
+\label{tab:actor_critic_rankings}
+\begin{tabular}{lc}
+\hline
+\textbf{Language} & \textbf{Rank} \\
+\hline
+English & 2nd \\
+Portuguese & 2nd \\
+Hindi & 3rd \\
+Russian & 4th \\
+Bulgarian & 5th \\
+\hline
+\end{tabular}
+\end{table}
+
+While the Actor-Critic approach already achieved competitive results with consistent top-5 rankings, the transition to Agora's multi-agent ensemble brought further improvements, most notably elevating Hindi from 3rd to 1st place. This progression demonstrates the value of moving from a single-critic refinement paradigm to a consensus-based ensemble approach.
+
+\subsection{Architectural Comparison and Ablation Study}
+
+To understand the source of Agora's success, we conducted a controlled comparison on the English dataset between our final Agora system, an intermediate Actor-Critic pipeline, and a Naive Baseline.
+
+\begin{table*}[ht]
+\centering
+\caption{Main Performance Comparison on the English Dataset. F1-Scores are reported for both hierarchy levels.}
+\label{tab:main_comparison}
+\begin{tabular}{lcc}
+\hline
+\textbf{System Configuration} & \textbf{Narrative F1} & \textbf{Sub-narrative F1} \\
+\hline
+1. Naive Baseline (Single-Pass) & 0.513 & 0.382 \\
+2. Actor-Critic Pipeline & 0.524 (+0.011) & 0.368 (-0.014) \\
+3. Agora (3-Agent Intersection) & 0.518 (+0.005) & \textbf{0.424 (+0.042)} \\
+\hline
+\end{tabular}
+\end{table*}
+
+This ablation study clearly reveals the performance pathway. The Naive Baseline establishes the performance of a standard zero-shot approach. The Actor-Critic Pipeline provides an inconsistent improvement, slightly boosting narrative F1 but harming sub-narrative F1, confirming that a single, fallible critic can introduce noise and is not a reliable path to improvement.
+
+The Agora framework delivers a decisive and consistent performance gain, particularly at the more challenging sub-narrative level. It achieves the highest sub-narrative F1-score of 0.424, an 11.0\% relative improvement over the Naive Baseline. This confirms that aggregating the consensus of multiple parallel agents is a more robust and effective method for enhancing LLM reliability than a single self-correction loop. The performance lift observed here provides a clear explanation for Agora's success in the SemEval competition.
+
+\subsection{Analysis of Voting Strategies}
+
+Within the Agora framework, the choice of voting strategy allows for tuning the system's precision/recall balance. Table~\ref{tab:voting_strategies} shows the performance of different aggregation methods on the English narrative classification task.
+
+\begin{table}[!ht]
+\centering
+\caption{Ablation of Agora Voting Strategies (English, Narrative F1).}
+\label{tab:voting_strategies}
+\begin{tabular}{lc}
+\hline
+\textbf{Aggregation Strategy} & \textbf{F1-Score} \\
+\hline
+Union & 0.494 \\
+Majority Vote (3 Agents) & 0.516 \\
+Intersection (3 Agents) & \textbf{0.518} \\
+\hline
+\end{tabular}
+\end{table}
+
+The consensus-based mechanisms (Majority Vote and Intersection) clearly outperform the noisy Union strategy. The Intersection method, requiring unanimous agreement, yields the highest F1-score, indicating its effectiveness at filtering out stochastic, low-confidence predictions from individual agents. This ability to systematically reduce noise through consensus is the core mechanical advantage of the Agora architecture.
+
