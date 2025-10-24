@@ -6,16 +6,21 @@ The dataset from the SemEval-2025 Task 10, Subtask 2, a task focused on multilin
 
 First, the dataset is fundamentally multi-label in nature. A majority of documents (54.0\%) are assigned more than one narrative, with an average of 2.28 labels per document. This necessitates a multi-label modeling approach.
 
-Second, and most critically, the dataset exhibits a severe class imbalance. As shown in Figure~\ref{fig:narrative_distribution}, the 22 narrative labels follow a classic long-tailed distribution. The most frequent narrative appears 65 times more often than the least frequent one. This sparsity poses a significant challenge for traditional supervised models, which risk overfitting on the few ``head'' classes and failing to generalize to the many rare but meaningful ``tail'' classes. This characteristic strongly motivates our adoption of a zero-shot paradigm, which does not depend on label frequencies in a training set.
-
-\begin{figure*}[!ht]
-\centering
-\includegraphics[width=0.95\textwidth]{assets/images/data_description/narrative_distribution.png}
-\caption{Long-tailed distribution of narrative labels. A small number of frequent narratives dominate the dataset, while most are rare. This severe imbalance justifies the use of zero-shot LLM approaches that do not rely on large per-class training counts.}
-\label{fig:narrative_distribution}
-\end{figure*}
+Second, and most critically, the dataset exhibits a severe class imbalance. As illustrated in the appendix (Figure~\ref{fig:narrative_distribution}), the 22 narrative labels follow a classic long-tailed distribution. The most frequent narrative appears 65 times more often than the least frequent one. This sparsity poses a significant challenge for traditional supervised models, which risk overfitting on the few ``head'' classes and failing to generalize to the many rare but meaningful ``tail'' classes. This characteristic strongly motivates our adoption of a zero-shot paradigm, which does not depend on label frequencies in a training set.
 
 Due to the multi-label nature and severe class imbalance inherent in the dataset, we decided to adopt a zero-shot learning approach. This paradigm avoids dependency on large per-class training counts and is well-suited to handle the long-tail distribution of narratives, making it ideal for this challenging classification task.
+
+\subsection{Dataset Statistics}
+
+The SemEval-2025 Task 10, Subtask 2 dataset comprises 1,699 documents spanning five languages: Bulgarian (BG), English (EN), Hindi (HI), Portuguese (PT), and Russian (RU). The dataset contains a total of 3,874 narrative annotations and 3,874 corresponding subnarrative annotations, organized in a two-level hierarchy with 22 top-level narratives and 95 subnarratives.
+
+\textbf{Multi-label Complexity.} The dataset exhibits significant multi-label characteristics: 918 documents (54.0\%) are assigned multiple narratives, while 781 documents (46.0\%) have a single narrative label. On average, each document is annotated with 2.28 narratives and 2.28 subnarratives. The maximum complexity reaches 14 narratives in a single document, highlighting the challenge of capturing diverse narrative content.
+
+\textbf{Class Imbalance.} A severe class imbalance characterizes the dataset, with the most frequent narrative (\textit{URW: Discrediting Ukraine}) appearing 584 times, while the least frequent (\textit{CC: Green policies are geopolitical instruments}) appears only 9 times. This yields an imbalance ratio of 64.9:1, reinforcing the motivation for zero-shot approaches that do not depend on per-class training counts.
+
+\textbf{Cross-lingual Distribution.} The language-specific statistics reveal variation in annotation density: Bulgarian (401 docs, 855 annotations, avg 2.13 labels/doc), English (399 docs, 875 annotations, avg 2.19 labels/doc), Hindi (366 docs, 655 annotations, avg 1.79 labels/doc), Portuguese (400 docs, 1,217 annotations, avg 3.04 labels/doc), and Russian (133 docs, 272 annotations, avg 2.05 labels/doc). Portuguese exhibits notably higher annotation density, while Hindi shows lower average labels per document.
+
+\textbf{Text Characteristics.} Document lengths vary considerably, ranging from 45 to 4,422 words, with an average of 404 words and a median of 371 words. This variation requires robust handling of both short and long-form content.
 
 \subsection{Hardware Configuration}
 

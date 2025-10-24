@@ -10,7 +10,7 @@ A promising recent approach to HMLC, which we refer to as H3Prompting, was intro
 
 Our first architectural exploration, the Actor-Critic Pipeline, sought to improve the reliability and transparency of a single agent's output. While zero-shot classification is powerful, simple label outputs lack traceability, making them difficult to audit and susceptible to unverified hallucinations. To overcome this, we designed a multi-stage pipeline that reframes the task from simple classification to evidence-grounded claim generation and validation.
 
-Our implementation uses the LangGraph framework to structure the process as a cyclical state graph \citep{langgraph2024}. The pipeline configuration is managed by a \texttt{ConfigurableGraphBuilder}, allowing components like validation to be enabled or disabled and different LLMs to be assigned to specific nodes via a YAML file. The workflow proceeds through several stages, as illustrated in Figure~\ref{fig:actor_critic_pipeline}.
+Our implementation uses the LangGraph framework to structure the process as a cyclical state graph \citep{langgraph2024}. The pipeline configuration is managed by a \texttt{ConfigurableGraphBuilder}, allowing components like validation to be enabled or disabled and different LLMs to be assigned to specific nodes via a YAML file. For the Actor-Critic experiments, we use Gemini 2.5 Flash as the underlying LLM for both the Actor and Critic agents. The workflow proceeds through several stages, as illustrated in Figure~\ref{fig:actor_critic_pipeline}.
 
 \begin{figure}[!ht]
 \centering
@@ -95,7 +95,7 @@ The complete prompts used in our experiments are provided in Appendix~\ref{appen
 
 To overcome the limitations of a single-critic system and the broader issue of single-agent stochasticity, we developed Agora, a multi-agent ensemble framework. The core principle of Agora is to replace the judgment of a single agent (or a single critic) with the collective ``wisdom of the crowd,'' leveraging the consensus of multiple independent agents to arrive at a more stable and accurate classification.
 
-Importantly, Agora uses the same core prompts as the baseline and Actor-Critic systems (without the Critic validation step). This design choice isolates the effect of the ensemble mechanism itself, allowing us to attribute performance improvements specifically to the consensus-based aggregation rather than to prompt engineering differences.
+Importantly, Agora uses the same core prompts as the baseline and Actor-Critic systems (without the Critic validation step). This design choice isolates the effect of the ensemble mechanism itself, allowing us to attribute performance improvements specifically to the consensus-based aggregation rather than to prompt engineering differences. For the Agora experiments, we use GPT-5-nano as the underlying LLM for all agents in the ensemble, with $N=3$ agents by default.
 
 The framework operates via a fan-out, fan-in process for each level of the hierarchy (e.g., Narrative classification).
 
