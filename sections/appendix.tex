@@ -52,7 +52,7 @@ You are an expert propaganda narrative analyst. Your task is to analyze the give
 
 \begin{small}
 \begin{quote}
-This text is known to contain the narrative: \{Parent Narrative\}. Your task is to identify which specific propaganda sub-narratives are present.
+This text is known to contain the narrative: \{Parent Narrative\}. Your task is to identify which specific sub-narratives are present.
 
 \textbf{AVAILABLE SUBNARRATIVES:} Each sub-narrative includes its definition, example, and classification instruction. An ``Other'' option is provided for cases where the text supports the parent narrative but does not fit specific sub-narrative definitions.
 
@@ -72,7 +72,7 @@ This text is known to contain the narrative: \{Parent Narrative\}. Your task is 
 
 \begin{small}
 \begin{quote}
-You are a meticulous and skeptical editor. Your task is to evaluate a classification of propaganda narratives applied to a text. You must be extremely strict. The classification is only valid if every narrative is strongly and explicitly supported by the provided evidence from the text.
+You are a meticulous and skeptical editor. Your task is to evaluate a classification of narratives applied to a text. You must be extremely strict. The classification is only valid if every narrative is strongly and explicitly supported by the provided evidence from the text.
 
 \textbf{EVALUATION CRITERIA (Apply Strictly):}
 \begin{enumerate}
@@ -115,4 +115,4 @@ You are a precise text cleaner. Your job is to clean raw text scraped from the w
 
 \subsection{Implementation Notes}
 
-All prompts are implemented as Python functions that dynamically populate templates with task-specific information (e.g., available narratives, definitions, parent narrative context). The category and narrative definitions are loaded from CSV files containing the task taxonomy. This modular design allows for easy adaptation to other hierarchical multilabel classification tasks beyond propaganda detection. These prompts were specifically developed and evaluated on SemEval-2025 Task 10 for multilingual narrative classification \citep{semeval2025task10}, demonstrating the generalizability of the approach across multiple languages and narrative types.
+All prompts are implemented as Python functions that dynamically populate templates with task-specific information (e.g., available narratives, definitions, parent narrative context). The category and narrative definitions are loaded from CSV files containing the task taxonomy. This modular design allows for easy adaptation to other hierarchical multilabel classification tasks. These prompts were specifically developed and evaluated on SemEval-2025 Task 10 for multilingual narrative classification \citep{semeval2025task10}, demonstrating the generalizability of the approach across multiple languages and narrative types.
