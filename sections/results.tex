@@ -8,7 +8,7 @@ The ultimate validation of the Agora framework comes from its performance in the
 
 \begin{table}[ht]
 \centering
-\caption{Official INSALyon2 Rankings using the Agora Framework in SemEval-2025 Task 10.}
+\caption{Performance of the Agora Framework in SemEval-2025 Task 10 across Languages.}
 \label{tab:semeval_rankings}
 \begin{tabular}{lc}
 \hline
@@ -29,7 +29,7 @@ Notably, these rankings represent a substantial improvement over our earlier sub
 
 \begin{table}[ht]
 \centering
-\caption{Official INSALyon2 Rankings using the Actor-Critic Pipeline in SemEval-2025 Task 10.}
+\caption{Performance of the Actor-Critic Pipeline in SemEval-2025 Task 10 across Languages.}
 \label{tab:actor_critic_rankings}
 \begin{tabular}{lc}
 \hline
@@ -48,7 +48,7 @@ While the Actor-Critic approach already achieved competitive results with consis
 
 \subsection{Architectural Comparison and Ablation Study}
 
-To understand the source of Agora's success, we conducted a controlled comparison on the English dataset between our final Agora system, an intermediate Actor-Critic pipeline, and a Naive Baseline.
+To understand the source of Agora's success, we conducted a controlled comparison on the English dataset between our final Agora system, an intermediate Actor-Critic pipeline, and a Naive Baseline. The results are presented in Table~\ref{tab:main_comparison}.
 
 \begin{table*}[ht]
 \centering
@@ -65,7 +65,7 @@ To understand the source of Agora's success, we conducted a controlled compariso
 \end{tabular}
 \end{table*}
 
-This ablation study reveals a clear performance pathway. The Naive Baseline, representing a standard single-pass approach, achieves an F1-Samples score of 0.382.
+This ablation study reveals a clear performance pathway. The Naive Baseline represents the H3Prompting approach described in Section~\ref{sec:baseline}: a single agent per level, applying one LLM call per hierarchical step without refinement. This baseline achieves an F1-Samples score of 0.382.
 
 The Actor-Critic Pipeline provides a significant improvement of +0.035, demonstrating that a self-refinement loop can effectively correct errors and improve classification quality.
 

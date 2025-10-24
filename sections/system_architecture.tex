@@ -21,7 +21,7 @@ Our implementation uses the LangGraph framework to structure the process as a cy
 
 \subsubsection{Category Classification}
 
-An initial node determines the document's high-level topic (e.g., CC or URW) to focus subsequent stages on the relevant subset of the narrative taxonomy.
+An initial node determines the document's high-level topic ( Climate Change (CC) or Ukrain-Russia-War (URW)) to focus subsequent stages on the relevant subset of the narrative taxonomy.
 
 \subsubsection{The Narrative Actor (Claim Generation)}
 
@@ -37,9 +37,65 @@ Once narratives are approved, the process repeats hierarchically. A Sub-narrativ
 
 This evidence-grounded architecture offers significant advantages in traceability and auditability, as every prediction is grounded in a textual \texttt{evidence\_quote}, a process we enhanced using LangSmith for detailed debugging and prompt refinement \citep{langsmith2024}. However, while this pipeline showed promise, our experiments revealed that it introduced its own form of instability. The process was highly sensitive to the quality of the Critic's feedback, which, being LLM-generated, was itself prone to stochasticity. A flawed critique could send the Actor down an unproductive refinement path, sometimes degrading performance. This reliance on a single, fallible ``critic'' highlighted a fundamental bottleneck and motivated our shift towards a more robust consensus mechanism.
 
+\subsection{Prompt Engineering Strategy}
+
+A critical component of both the Actor-Critic and Agora frameworks is the systematic design of prompts that guide the LLM's classification behavior. Our prompting strategy incorporates several key principles:
+
+\subsubsection{Structured Output Format}
+
+All classification prompts enforce structured JSON output with required fields (\texttt{narrative\_name}, \texttt{evidence\_quote}, and \texttt{reasoning}). This constraint ensures that every classification decision is explicitly grounded in textual evidence, enabling traceability and facilitating automated validation. For example, the narrative classification prompt specifies:
+
+\begin{quote}
+\textit{``Your entire response MUST be a single JSON object. ALL fields in the schema below are REQUIRED. Do not omit any fields.''}
+\end{quote}
+
+\noindent This strict formatting requirement forces the model to provide explicit justifications, preventing opaque label predictions.
+
+\subsubsection{Chain-of-Thought Reasoning}
+
+Prompts explicitly instruct the model to perform step-by-step internal reasoning before producing the final classification. This approach, inspired by chain-of-thought prompting \citep{wei2022chain}, encourages the model to identify key phrases, evaluate each potential label against the evidence, and formulate explicit justifications. The narrative classification prompt includes:
+
+\begin{quote}
+\textit{``Step 1: Chain of Thought (Internal Reasoning). First, think step-by-step to analyze the provided text. Identify key phrases, arguments, and themes. For each potential narrative from the list, consider if it applies. Find a specific, direct quote from the text that serves as the strongest evidence for each narrative you believe is present.''}
+\end{quote}
+
+\noindent This two-step process (reasoning, then formatting) reduces impulsive classifications and improves output quality.
+
+\subsubsection{Hierarchical Prompt Design}
+
+The classification process uses distinct prompts at each level of the hierarchy:
+\begin{itemize}
+\item \textbf{Category Classification}: A strict topical classifier that determines whether the text pertains to Climate Change (CC) or the Ukraine-Russia War (URW). The prompt enforces strict labeling: \textit{``Output EXACTLY one label token enclosed in square brackets on the next line: [URW], [CC], or [Other].''}
+
+\item \textbf{Narrative Classification}: Given the category, the model selects from category-specific narratives, with each narrative accompanied by its definition, examples, and classification instructions. Each narrative entry follows the template:
+\begin{quote}
+\small
+\textit{``- \{Category\}: \{Narrative Name\}\\
+\hspace*{1em}Definition: \{Definition text\}\\
+\hspace*{1em}Example: \{Example text\}\\
+\hspace*{1em}Instruction: \{Instruction text\}''}
+\end{quote}
+
+\item \textbf{Sub-narrative Classification}: Given a parent narrative, the model identifies more fine-grained sub-narratives, including an ``Other'' option for cases where the text supports the parent narrative but does not fit specific sub-narrative definitions. The prompt explicitly instructs: \textit{``Step 2: Check for a Remainder. Are there any other phrases or arguments that support the parent narrative but were NOT used as evidence for the specific subnarratives? Step 3: Add `Other' if Necessary.''}
+\end{itemize}
+
+\subsubsection{Critic Prompts and Refinement}
+
+In the Actor-Critic pipeline, the Critic agent receives a specialized prompt that adopts a ``meticulous and skeptical editor'' persona. The Critic evaluates classifications against strict criteria: evidence accuracy (verbatim quotes), relevance (direct support for the label), and completeness (no obvious narratives missed). The critic prompt states:
+
+\begin{quote}
+\textit{``You are a meticulous and skeptical editor. Your task is to evaluate a classification of propaganda narratives applied to a text. You must be extremely strict. The classification is only valid if every narrative is strongly and explicitly supported by the provided evidence from the text.''}
+\end{quote}
+
+\noindent When validation fails, a refinement prompt incorporates the Critic's feedback: \textit{``You previously analyzed a text, but your analysis had flaws. A meticulous editor has provided the following feedback. Your task is to re-analyze the text, incorporating this feedback to produce a new, corrected classification.''} This feedback loop enables iterative self-correction.
+
+The complete prompts used in our experiments are provided in Appendix~\ref{appendix:prompts} to facilitate reproducibility.
+
 \subsection{Proposed Framework: The Agora Multi-Agent Ensemble}
 
 To overcome the limitations of a single-critic system and the broader issue of single-agent stochasticity, we developed Agora, a multi-agent ensemble framework. The core principle of Agora is to replace the judgment of a single agent (or a single critic) with the collective ``wisdom of the crowd,'' leveraging the consensus of multiple independent agents to arrive at a more stable and accurate classification.
+
+Importantly, Agora uses the same core prompts as the baseline and Actor-Critic systems (without the Critic validation step). This design choice isolates the effect of the ensemble mechanism itself, allowing us to attribute performance improvements specifically to the consensus-based aggregation rather than to prompt engineering differences.
 
 The framework operates via a fan-out, fan-in process for each level of the hierarchy (e.g., Narrative classification).
 
