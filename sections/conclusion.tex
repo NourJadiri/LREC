@@ -3,7 +3,11 @@
 In this work, we addressed the critical challenge of stochasticity and unreliability in Large Language Models when applied to complex Hierarchical Multi-Label Classification tasks. While the zero-shot capabilities of LLMs are powerful, their inconsistent outputs present a significant barrier to their deployment in real-world, high-stakes applications like propaganda detection.
 
 We introduced Agora, a multi-agent ensemble framework designed to directly mitigate this issue. By leveraging the consensus of multiple independent LLM agents through a robust voting mechanism, Agora transforms a brittle, single-pass classification into a stable, statistically-grounded decision process.
+Our experiments, conducted on the SemEval-2025 narrative detection task, provided three key findings: 
+(1) a naive single-pass LLM baseline is outperformed by more sophisticated architectures; 
+(2) a seemingly intuitive Actor-Critic self-refinement pipeline can be counterproductive, as the critic's own unreliability can introduce noise and degrade performance; 
+(3) our Agora framework, using a 3-agent majority vote, delivers substantial and consistent performance gains over both other approaches and state-of-the-art.
 
-Our experiments, conducted on the challenging SemEval-2025 narrative detection task, provided three key findings. First, we demonstrated that a naive single-pass LLM baseline is outperformed by more sophisticated architectures. Second, we showed that a seemingly intuitive Actor-Critic self-refinement pipeline can be counterproductive, as the critic's own unreliability can introduce noise and degrade performance. Finally, we proved that our Agora framework, using a 3-agent majority vote, delivers substantial and consistent performance gains over both other approaches.
-
-The state-of-the-art performance of Agora in the SemEval test set, validates our central claim: ensembling is a powerful and practical method for building more robust and accurate zero-shot classification systems. As the field increasingly relies on powerful but imperfect LLMs, frameworks like Agora that prioritize reliability through consensus will be essential for creating trustworthy and deployable NLP solutions.
+The top-ranked performance of Agora on the SemEval test set, validates our central claim: ensembling is a powerful and practical method for building more robust and accurate zero-shot classification systems. 
+%As the field increasingly relies on powerful but imperfect LLMs, f
+Frameworks like Agora that prioritize reliability through consensus will be essential for creating trustworthy and deployable NLP solutions.

@@ -1,8 +1,8 @@
 \section{Limitations and Future Work}
 
-\subsection{Limitations}
+%\subsection{Limitations}
 
-Our study, while demonstrating the effectiveness of the Agora framework, is subject to several limitations that offer avenues for future work.
+Our study, while demonstrating the effectiveness of the Agora framework, is subject to several \textbf{limitations} that offer avenues for future work.
 
 \textbf{Model and API Dependency:} Our zero-shot framework relies on proprietary LLMs (e.g., gpt-5-nano). This limits full reproducibility, as performance is tied to specific, closed-source model versions. Future work should explore the effectiveness of this ensemble approach with open-source models to ensure broader accessibility and control.
 
@@ -10,8 +10,9 @@ Our study, while demonstrating the effectiveness of the Agora framework, is subj
 
 \textbf{Computational Cost:} Deploying a multi-agent ensemble incurs a direct multiplication of inference cost and latency compared to a single-agent system. In our $N=3$ configuration, the cost is roughly triple that of the baseline. While the performance gains justified this trade-off in a competitive setting, a critical area for future research is exploring cost-reduction techniques, such as using smaller, distilled models for some agents or implementing more sophisticated routing where an ensemble is only triggered for high-uncertainty cases.
 
-\subsection{Future Work}
+%\subsection{Future Work}
 
-Based on our findings, we propose several directions for future research. First, exploring a weighted majority vote, where agents' votes are weighted by a confidence score, could further refine the consensus mechanism. Second, a hybrid approach that uses the fast Naive Baseline for simple cases and dynamically invokes the more robust Agora ensemble for difficult or ambiguous texts could optimize the cost-performance trade-off. Finally, applying the Agora framework to other complex, hierarchical domains beyond propaganda detection, such as legal text or biomedical literature analysis, would further validate its generalizability.
+Based on our findings, we propose several \textbf{directions for future research}. First, exploring a weighted majority vote, where agents' votes are weighted by a confidence score, could further refine the consensus mechanism. Second, a hybrid approach that uses the fast Naive Baseline for simple cases and dynamically invokes the more robust Agora ensemble for difficult or ambiguous texts could optimize the cost-performance trade-off. Finally, applying the Agora framework to other complex, hierarchical domains beyond propaganda detection, such as legal text or biomedical literature analysis, would further validate its generalizability.
 
-Beyond the zero-shot paradigm, a promising direction involves fine-tuning LLMs on task-specific data to achieve higher performance. However, this approach faces a significant challenge in the multilingual propaganda detection context: the need for high-quality labeled data across multiple languages while preserving cultural nuances. As noted in \citep{eljadiri-nurbakova-2025-team}'s paper, machine translation of training data often loses cultural context and domain-specific subtleties, making direct translation-based data augmentation problematic. Future work must explore methods for generating culturally-aware training data, such as collaborative annotation with native speakers or culturally-grounded synthetic data generation, to enable effective fine-tuning while respecting the nuanced differences between languages.
+Beyond the zero-shot paradigm, a promising direction involves fine-tuning LLMs on task-specific data to achieve higher performance. 
+However, this approach faces a significant challenge in the multilingual propaganda detection context: the need for high-quality labeled data across multiple languages while preserving cultural nuances. As noted in \citep{eljadiri-nurbakova-2025-team}, machine translation of training data often loses cultural context and domain-specific subtleties, making direct translation-based data augmentation problematic. Future work must explore methods for generating culturally-aware training data, such as collaborative annotation with native speakers or culturally-grounded synthetic data generation, to enable effective fine-tuning while respecting the nuanced differences between languages.
