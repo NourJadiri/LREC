@@ -51,45 +51,39 @@ This analysis provides a crucial insight: simply combining agent outputs is not 
 
 \subsection{State-of-the-Art Performance in SemEval-2025}
 
-The ultimate validation of the Agora framework comes from its performance in the official SemEval-2025 Task 10 competition. Our submitted system, which was the Agora multi-agent ensemble, achieved top-tier rankings across all five languages, including a first-place finish in Hindi.
+The ultimate validation of our approaches comes from their performance in the official SemEval-2025 Task 10 competition. We submitted two architectures: the Actor-Critic pipeline (Gemini 2.5 Flash) and the Agora multi-agent ensemble (GPT-5-nano). Table~\ref{tab:semeval_comprehensive} presents a comprehensive comparison across all five languages.
 
-\begin{table}[ht]
+\begin{table*}[ht]
 \centering
-\caption{Performance of the Agora Framework in SemEval-2025 Task 10 across Languages.}
-\label{tab:semeval_rankings}
-\begin{tabular}{lc}
+\caption{Comprehensive comparison of Actor-Critic and Agora architectures in SemEval-2025 Task 10 across all languages. F1 Samples is the primary evaluation metric, with F1 Macro Coarse provided for reference. Rankings reflect official competition standings. Agora configurations shown represent the best-performing variant for each language.}
+\label{tab:semeval_comprehensive}
+\small
+\begin{tabular}{lcccccccc}
 \hline
-\textbf{Language} & \textbf{Rank} \\
+\textbf{Language} & \multicolumn{3}{c}{\textbf{Actor-Critic (Gemini 2.5 Flash)}} & \multicolumn{4}{c}{\textbf{Agora (GPT-5-nano)}} & \textbf{$\Delta$ F1} \\
+\cline{2-4} \cline{5-8}
+& \textbf{F1 Samples} & \textbf{F1 Macro} & \textbf{Rank} & \textbf{F1 Samples} & \textbf{F1 Macro} & \textbf{Config} & \textbf{Rank} & \textbf{Samples} \\
 \hline
-Hindi & \textbf{1st} \\
-English & 2nd \\
-Portuguese & 2nd \\
-Russian & 3rd \\
-Bulgarian & 4th \\
+Bulgarian & 0.381 & 0.590 & 5th & 0.403 & 0.575 & Narr. Inter. & 4th & +0.022 \\
+English & 0.433 & 0.547 & 2nd & 0.424 & 0.518 & Full Inter. & 2nd & -0.009 \\
+Hindi & 0.435 & 0.515 & 3rd & \textbf{0.581} & \textbf{0.673} & Full Inter. & \textbf{1st} & \textbf{+0.146} \\
+Portuguese & 0.433 & 0.679 & 2nd & 0.385 & 0.602 & Narr. Union & 2nd & -0.048 \\
+Russian & 0.410 & 0.589 & 4th & 0.437 & 0.556 & Narr. Union & 3rd & +0.027 \\
+\hline
+\textbf{Average} & \textbf{0.418} & \textbf{0.584} & \textbf{3.2} & \textbf{0.446} & \textbf{0.585} & --- & \textbf{2.4} & \textbf{+0.028} \\
 \hline
 \end{tabular}
-\end{table}
+\end{table*}
 
-These results confirm that the consensus-based approach is not just a theoretical improvement but a practical, state-of-the-art method for complex HMLC tasks. Achieving a first-place and two second-place finishes in a highly competitive shared task validates the robustness and generalizability of the Agora architecture.
+The comprehensive comparison reveals several critical insights about the two architectures. On average, Agora achieves a +0.028 improvement in F1 Samples over the Actor-Critic pipeline (0.446 vs 0.418), while maintaining comparable F1 Macro performance (0.585 vs 0.584). More importantly, Agora's improved average ranking from 3.2 to 2.4 demonstrates superior competitive performance.
 
-Notably, these rankings represent a substantial improvement over our earlier submission using the Actor-Critic pipeline approach. Table~\ref{tab:actor_critic_rankings} shows the performance of that intermediate architecture.
+\textbf{Hindi shows dramatic improvement.} The most striking result is Hindi, where Agora's Full Intersection configuration achieves 0.581 F1 Samples (+0.146 improvement, +33.6\%) and 0.673 F1 Macro, elevating the ranking from 3rd to 1st place. This substantial gain suggests that consensus-based ensembling is particularly effective for languages where single-agent predictions exhibit higher variance.
 
-\begin{table}[ht]
-\centering
-\caption{Performance of the Actor-Critic Pipeline in SemEval-2025 Task 10 across Languages.}
-\label{tab:actor_critic_rankings}
-\begin{tabular}{lc}
-\hline
-\textbf{Language} & \textbf{Rank} \\
-\hline
-English & 2nd \\
-Portuguese & 2nd \\
-Hindi & 3rd \\
-Russian & 4th \\
-Bulgarian & 5th \\
-\hline
-\end{tabular}
-\end{table}
+\textbf{Configuration selection is language-dependent.} The optimal Agora configuration varies significantly across languages: Bulgarian benefits from Narrative Intersection, English and Hindi achieve best results with Full Intersection, while Portuguese and Russian perform optimally with Narrative Union. This pattern indicates that different languages and their associated narrative distributions require different consensus strategies, with Full Intersection particularly effective for languages like Hindi with high prediction variance.
 
-While the Actor-Critic approach already achieved competitive results with consistent top-5 rankings, the transition to Agora's multi-agent ensemble brought further improvements, most notably elevating Hindi from 3rd to 1st place. This progression demonstrates the value of moving from a single-critic refinement paradigm to a consensus-based ensemble approach.
+\textbf{Mixed performance on English and Portuguese.} Interestingly, Agora shows slight degradation on English (-0.009) and more substantial decrease on Portuguese (-0.048) despite maintaining competitive rankings. This suggests that for languages with certain characteristics, the Actor-Critic's iterative refinement approach may be more effective than consensus-based voting, particularly when the base model predictions are already highly accurate.
+
+\textbf{Consistent ranking improvements validate ensemble approach.} Despite mixed F1 Samples results, Agora achieves better or equal rankings in all languages, most notably improving Bulgarian (5th→4th) and Russian (4th→3rd) beyond the dramatic Hindi improvement (3rd→1st). This validates that consensus-based ensembling provides more robust competitive performance across diverse multilingual settings.
+
+These results confirm that both approaches represent state-of-the-art methods for multilingual hierarchical narrative classification, with Agora's consensus mechanism achieving superior average performance (+0.028 F1 Samples) and competitive standings (2.4 vs 3.2 average rank), particularly excelling in languages with high prediction variance like Hindi.
 
