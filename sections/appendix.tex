@@ -11,11 +11,12 @@ Figure~\ref{fig:actor_critic_pipeline} illustrates the complete Actor-Critic pip
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[height=20cm]{assets/diagrams/actor-critique.png}
+\includegraphics[height=17cm]{assets/diagrams/actor-critique.png}
 \caption{Actor-Critic validation pipeline architecture. The system decomposes HMLC into hierarchical stages where a Narrative Actor generates evidence-grounded claims, which are then validated by a Narrative Critic. Feedback loops enable iterative refinement before progressing to sub-narrative classification.}
 \label{fig:actor_critic_pipeline}
 \end{figure*}
 
+\iffalse
 \subsubsection{Agora Multi-Agent Ensemble Architecture}
 
 Figure~\ref{fig:vote_based_ensemble} presents the Agora multi-agent ensemble architecture, illustrating the fan-out and fan-in processes with voting aggregation strategies described in Section 3.4.
@@ -26,6 +27,7 @@ Figure~\ref{fig:vote_based_ensemble} presents the Agora multi-agent ensemble arc
 \caption{Agora multi-agent ensemble architecture. The framework distributes the classification task to $N$ independent agents in parallel (Fan-Out), aggregates their results using a voting mechanism (Fan-In), and produces a final label set based on the chosen aggregation strategy (Union, Intersection, or Majority Vote).}
 \label{fig:vote_based_ensemble}
 \end{figure*}
+\fi
 
 \subsection{Prompt Templates}
 \label{appendix:prompts}

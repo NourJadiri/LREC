@@ -1,7 +1,7 @@
-\section{System Architecture}
+\section{System Architecture}\label{sec:archi}
 We address the following problem: given a multilingual news article, assign multiple labels from a two-level taxonomy of narratives and subnarratives.
 
-A promising recent approach to HMLC, which we refer to as H3Prompting, was introduced by \citet{singh-etal-2025-gatenlp}. 
+A promising recent approach to HMLC, which we refer to as \textbf{H3Prompting}, was introduced by \citet{singh-etal-2025-gatenlp}. 
 This method decomposes the hierarchical classification task into a sequence of zero-shot LLM queries, where an initial prompt determines the top-level category, and subsequent prompts classify second-level narratives conditioned on the first-level prediction. 
 In the spirit of reproducible research, we first aimed to replicate this method. 
 However, the lack of publicly available implementation details prevented a direct reproduction, motivating our development of an open and configurable framework to systematically investigate zero-shot HMLC strategies.
@@ -19,18 +19,16 @@ First, we propose a traceable self-refining pipeline. Second, upon identifying i
 Our \textbf{Actor-Critic Pipeline} aims to improve the reliability and transparency of a single agent's output. 
 In zero-shot classification context, simple label outputs lack traceability and auditability, and are susceptible to unverified hallucinations. To overcome this, we propose a multi-stage pipeline reframing the task from simple classification to evidence-grounded claim generation and validation.
 
-<<<<<<< HEAD
-Our implementation uses the LangGraph framework to structure the process as a cyclical state graph \citep{langgraph2024}. The pipeline configuration is managed by a \texttt{ConfigurableGraphBuilder}, allowing components like validation to be enabled or disabled and different LLMs to be assigned to specific nodes via a YAML file. For the Actor-Critic experiments, we use Gemini 2.5 Flash as the underlying LLM for both the Actor and Critic agents. The workflow proceeds through several stages, as illustrated in Figure~\ref{fig:actor_critic_pipeline}.
+Our implementation uses the LangGraph framework to structure the process as a cyclical state graph \citep{langgraph2024}. The pipeline configuration is managed by a \texttt{ConfigurableGraphBuilder}, allowing components like validation to be enabled or disabled and different LLMs to be assigned to specific nodes via a YAML file. For the Actor-Critic experiments, we use Gemini 2.5 Flash as the underlying LLM for both the Actor and Critic agents. The workflow proceeds through several stages (detailed below and visualized in Appendix Figure~\ref{fig:actor_critic_pipeline}).
 
+\iffalse
 \begin{figure}[!ht]
 \centering
 \includegraphics[height=17cm]{assets/diagrams/actor-critique.png}
 \caption{Actor-Critic pipeline architecture. HMLC task is decomposed into hierarchical stages where a Narrative Actor generates evidence-grounded claims, which are then validated by a Narrative Critic. Feedback loops enable iterative refinement before getting to sub-narrative classification.}
 \label{fig:actor_critic_pipeline}
 \end{figure}
-=======
-Our implementation uses the LangGraph framework to structure the process as a cyclical state graph \citep{langgraph2024}. The pipeline configuration is managed by a \texttt{ConfigurableGraphBuilder}, allowing components like validation to be enabled or disabled and different LLMs to be assigned to specific nodes via a YAML file. For the Actor-Critic experiments, we use Gemini 2.5 Flash as the underlying LLM for both the Actor and Critic agents. The workflow proceeds through several stages (detailed below and visualized in Appendix Figure~\ref{fig:actor_critic_pipeline}).
->>>>>>> 86e8792dff0f763fe7ff81ceed3a56b3a6ba8d62
+\fi
 
 \textbf{Category Classification.} 
 An initial node determines the document's domain (e.g. Climate Change (CC) or Ukraine-Russia-War (URW)) to focus subsequent stages on the relevant subset of the narrative taxonomy.
@@ -45,11 +43,12 @@ The Actor's output is passed to the ``Critic,'' a separate LLM agent with a dist
 Once narratives are set, the process repeats hierarchically. A Sub-narrative Actor generates claims for each parent narrative, which are then validated by a Sub-narrative Critic, also with a self-correction loop.
 
 %\vspace{0.5cm}
-This evidence-grounded architecture offers significant advantages in traceability and auditability, as every prediction is grounded in a textual \texttt{evidence\_quote}, a process we enhanced using LangSmith for detailed debugging and prompt refinement \citep{langsmith2024}. However, while this pipeline showed promise, our experiments revealed that it introduced its own form of instability. The process was highly sensitive to the quality of the Critic's feedback, which, being LLM-generated, was itself prone to stochasticity. A flawed critique could send the Actor down an unproductive refinement path, sometimes degrading performance. This reliance on a single, fallible ``critic'' highlighted a fundamental bottleneck and motivated our shift towards a more robust consensus mechanism.
+This evidence-grounded architecture offers significant advantages in traceability and auditability, as every prediction is grounded in a textual \texttt{evidence\_quote}, a process we enhanced using LangSmith for detailed debugging and prompt refinement \citep{langsmith2024}. However, while this pipeline showed promise, our experiments revealed that it introduced its own form of instability (see Table \ref{tab:actor_critique_ablation}). The process was highly sensitive to the quality of the Critic's feedback, which, being LLM-generated, was itself prone to stochasticity. A flawed critique could send the Actor down an unproductive refinement path, sometimes degrading performance. This reliance on a single ``critic'' highlighted a fundamental bottleneck and motivated our shift towards a consensus mechanism.
 
 \subsection{Prompt Engineering Strategy}
 
-A critical component of both the Actor-Critic and Agora frameworks is the systematic design of prompts that guide the LLM's classification behavior. Our prompting strategy incorporates several key principles:
+A critical component of both the Actor-Critic and Agora frameworks is the systematic design of prompts. %that guide the LLM's classification behavior. 
+Our prompting strategy incorporates several key principles:
 
 \noindent\textbf{1. Structured Output Format.} 
 All classification prompts enforce structured JSON output with required fields (\texttt{narrative\_name}, \texttt{evidence\_quote}, and \texttt{reasoning}). 
@@ -75,7 +74,7 @@ The narrative classification prompt includes:
 \noindent This two-step process (reasoning, then formatting) reduces impulsive classifications and improves output quality.
 
 \noindent\textbf{3. Hierarchical Prompt Design} 
-The classification process uses distinct prompts at each level of the hierarchy:
+We use distinct prompts at each level of the hierarchy:
 \begin{itemize}
 \item \textbf{Category Classification}: A strict topical classifier that determines text domain (e.g. Climate Change (CC) or the Ukraine-Russia War (URW)). 
 The prompt enforces strict labeling: 

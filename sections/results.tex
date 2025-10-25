@@ -1,36 +1,39 @@
 \section{Results}
 
-In this section, we report the empirical results of our experiments. We first provide a detailed architectural comparison to understand the source of improvements, analyze voting strategies, and then validate our approach through competitive performance in the official SemEval-2025 Task 10 shared task.
+In this section, we report our empirical results. We first provide a detailed architectural comparison to understand the source of improvements, analyze voting strategies, and then validate our approach through competitive performance in the official SemEval-2025 Task 10 shared task.
 
 \subsection{Architectural Comparison and Ablation Study}
 
-To understand the effectiveness of our approach, we conducted a controlled comparison on the English dataset between our final Agora system, an intermediate Actor-Critic pipeline, and a Naive Baseline. The results are presented in Table~\ref{tab:main_comparison}.
+To understand the effectiveness of our approach, we conducted a comparison on the English dataset between our final Agora system, an intermediate Actor-Critic pipeline, and a Naive Baseline. The latter represents the H3Prompting approach described in Section~\ref{sec:archi}: a single agent per level, applying one LLM call per hierarchical step without refinement. The results are presented in Table~\ref{tab:main_comparison}.
 
 \begin{table*}[ht]
 \centering
 \caption{Main Performance Comparison on the English Dataset (F1-Samples).}
 \label{tab:main_comparison}
-\begin{tabular}{lcc}
+\small
+\begin{tabular}{lccc}
 \hline
-\textbf{System Configuration} & \textbf{F1-Samples Score} & \textbf{Improvement over Baseline} \\
+\textbf{System Configuration} & \textbf{F1-Samples Score} & \textbf{Improv. vs. Baseline} & \textbf{Improv. vs. Agora Single Agent} \\
 \hline
-1. Naive Baseline (Single-Pass) & 0.382 & --- \\
-2. Actor-Critic Pipeline & 0.417 & +0.035 \\
-3. Agora (3-Agent Intersection) & \textbf{0.424} & \textbf{+0.042} \\
+Naive Baseline (Single-Pass) & 0.382 & --- & -0.007\\
+Actor-Critic Pipeline & 0.417 & +0.035 & +0.028\\ \hline
+Agora Single Agent (Vanilla) & 0.389 & +0.007 & ---\\
+Agora 3-Agent Union & 0.375 & -0.007 & -0.014\\
+Agora 3-Agent Majority Vote & 0.402 & +0.026 &  +0.013\\
+Agora 3-Agent Intersection & \textbf{0.424} & \textbf{+0.042} & \textbf{+0.035}\\
 \hline
 \end{tabular}
 \end{table*}
 
-This ablation study reveals a clear performance pathway. The Naive Baseline represents the H3Prompting approach described in Section~\ref{sec:baseline}: a single agent per level, applying one LLM call per hierarchical step without refinement. This baseline achieves an F1-Samples score of 0.382.
-
-The Actor-Critic Pipeline provides a significant improvement of +0.035, demonstrating that a self-refinement loop can effectively correct errors and improve classification quality.
-
+This ablation study reveals a clear performance pathway. The Naive Baseline achieves an F1-Samples score of 0.382. 
+The Actor-Critic Pipeline provides a significant improvement of +0.035, demonstrating that a self-refinement loop can effectively correct errors and improve classification quality. 
 However, our proposed Agora framework delivers an even greater performance gain. It achieves the highest F1-Samples score of 0.424, a +0.042 point improvement (+11.0\%) over the Naive Baseline. This result confirms our central hypothesis: while single-agent refinement is beneficial, the consensus-based approach of a multi-agent ensemble is a more robust and superior method for enhancing LLM reliability.
 
-\subsection{Analysis of Agora's Voting Strategies}
+\subsection{Agora's Voting Strategies}
 
-To isolate the effect of the ensemble itself, we compared a single-agent Agora configuration (``Vanilla'') against the different multi-agent voting strategies. Table~\ref{tab:voting_strategies} shows that the choice of aggregation method is critical to the ensemble's success.
+To isolate the effect of the ensemble itself, we compared a single-agent Agora configuration (``Vanilla'') against the different multi-agent voting strategies. Table~\ref{tab:main_comparison} shows that the choice of aggregation method is critical to the ensemble's success.
 
+\iffalse
 \begin{table*}[!ht]
 \centering
 \caption{Ablation of Agora Configurations on the English Dataset (F1-Samples).}
@@ -46,16 +49,18 @@ To isolate the effect of the ensemble itself, we compared a single-agent Agora c
 \hline
 \end{tabular}
 \end{table*}
+\fi
 
 This analysis provides a crucial insight: simply combining agent outputs is not enough. The Union strategy, which naively accepts all proposed labels, actually performs worse than a single agent by aggregating noise. In contrast, the consensus-based mechanisms deliver clear benefits. Both Majority Vote (+0.013) and Intersection (+0.035) significantly outperform the single agent. The Intersection strategy, requiring unanimous agreement, proves most effective for this task, successfully filtering out stochastic, low-confidence predictions to achieve the best overall performance. This demonstrates that the core advantage of Agora lies in its ability to systematically reduce noise through consensus.
 
 \subsection{Actor-Critic Validation Ablation: More Complexity Does Not Equal Better Performance}
 
-To further understand the refinement paradigm, we conducted a comprehensive ablation study of the Actor-Critic pipeline across the multilingual development set (178 documents). We evaluated three validation configurations: no validation (baseline single-pass), narrative-level validation only, and subnarrative-level validation only. Table~\ref{tab:actor_critique_ablation} presents the results.
+To further understand the refinement paradigm, we conducted an ablation study of the Actor-Critic pipeline across the multilingual development set (178 documents). We evaluated three validation configurations: no validation (baseline single-pass), narrative-level validation only, and subnarrative-level validation only. Table~\ref{tab:actor_critique_ablation} presents the results.
 
 \begin{table*}[ht]
 \centering
-\caption{Comprehensive ablation study of Actor-Critic pipeline validation configurations across multilingual development set (178 documents). Results show F1 Coarse (narratives) and F1 Sample (subnarratives) for three validation strategies. Notably, the no-validation baseline outperforms both validation approaches on average.}
+\caption{Ablation study of Actor-Critic pipeline validation across multilingual dev set (178 documents)%. Results show F1 Coarse (narratives) and F1 Sample (subnarratives) for three validation strategies. Notably, the no-validation baseline outperforms both validation approaches on average.
+}
 \label{tab:actor_critique_ablation}
 \small
 \begin{tabular}{lccccc}
@@ -83,18 +88,19 @@ RU & None & 0.6958 & 0.4754 & --- & --- \\
    & Subnarrative & 0.6693 & 0.5078 & -0.0265 & +0.0324 \\
 \hline
 \textbf{Average} & None & \textbf{0.6019} & \textbf{0.4077} & --- & --- \\
-                 & Narrative & \textbf{0.5919} & \textbf{0.4055} & \textbf{-0.0100} & \textbf{-0.0022} \\
-                 & Subnarrative & \textbf{0.5758} & \textbf{0.4102} & \textbf{-0.0261} & \textbf{+0.0025} \\
+                 & Narrative & 0.5919 & 0.4055 & -0.0100 & -0.0022 \\
+                 & Subnarrative & 0.5758 & 0.4102 & -0.0261 & +0.0025 \\
 \hline
 \end{tabular}
 \end{table*}
 
 The ablation study reveals a counter-intuitive but critical finding: \textbf{adding validation mechanisms generally degrades performance rather than improving it}. On average, the no-validation baseline achieves the highest F1 Coarse (0.6019) and competitive F1 Sample (0.4077), while both validation strategies show negative average deltas for F1 Coarse (-0.0100 for narrative, -0.0261 for subnarrative). Russian is the only language where narrative validation consistently improves both metrics (+0.0122, +0.0032), while Portuguese experiences the most dramatic degradation (-0.0585, -0.0370 with subnarrative validation). This pattern suggests that critique agents systematically over-correct the base model's predictions, introducing noise rather than filtering it. The finding directly motivates our shift to Agora's consensus-based approach, which achieves improvements through diversity and aggregation rather than iterative refinement that risks over-correction.
 
-\subsection{State-of-the-Art Performance in SemEval-2025}
+\subsection{Competitive Performance}
 
-The ultimate validation of our approaches comes from their performance in the official SemEval-2025 Task 10 competition. We submitted two architectures: the Actor-Critic pipeline (Gemini 2.5 Flash) and the Agora multi-agent ensemble (GPT-5-nano). Table~\ref{tab:semeval_comprehensive} presents a comprehensive comparison across all five languages.
+The main validation of our approaches comes from their performance compared to the \href{https://propaganda.math.unipd.it/semeval2025task10/leaderboardv3.html}{official SemEval-2025 Task 10 results}. Table~\ref{tab:semeval_comprehensive} presents a comprehensive comparison across all five languages. We compare our solutions with the winning teams (GATENLP for EN, PT, RU, PATeam for BG, QUST for HI). Note that we were not able to reproduce the results of the main winning system (GATENLP). %We submitted two architectures: the Actor-Critic pipeline (Gemini 2.5 Flash) and the Agora multi-agent ensemble (GPT-5-nano). 
 
+\iffalse
 \begin{table*}[ht]
 \centering
 \caption{Comprehensive comparison of Actor-Critic and Agora architectures in SemEval-2025 Task 10 across all languages. F1 Samples is the primary evaluation metric, with F1 Macro Coarse provided for reference. Rankings reflect official competition standings. Agora configurations shown represent the best-performing variant for each language.}
@@ -116,8 +122,33 @@ Russian & 0.410 & 0.589 & 4th & 0.437 & 0.556 & Narr. Union & 3rd & +0.027 \\
 \hline
 \end{tabular}
 \end{table*}
+\fi
 
-The comprehensive comparison reveals several critical insights about the two architectures. On average, Agora achieves a +0.028 improvement in F1 Samples over the Actor-Critic pipeline (0.446 vs 0.418), while maintaining comparable F1 Macro performance (0.585 vs 0.584). More importantly, Agora's improved average ranking from 3.2 to 2.4 demonstrates superior competitive performance.
+\begin{table*}[ht]
+\centering
+\caption{Comprehensive comparison of Actor-Critic and Agora architectures in SemEval-2025 Task 10 across all languages and vs. the winning run from \href{https://propaganda.math.unipd.it/semeval2025task10/leaderboardv3.html}{the official leaderboard of SemEval Task 10}. We were not able to reproduce the results of the latter. F1 Samples is the primary evaluation metric, with F1 Macro Coarse provided for reference. In parenthesis, a post-challenge ranking is given. Agora configurations shown represent the best-performing variant for each language.}
+\label{tab:semeval_comprehensive}
+\small
+\begin{tabular}{lc@{}cc@{}c@{}cc@{}c}
+\hline
+\textbf{Language} & \multicolumn{2}{c}{\textbf{Actor-Critic (Gemini 2.5 Flash)}} & \multicolumn{3}{c}{\textbf{Agora (GPT-5-nano)}} &  \multicolumn{2}{c}{\textbf{Best Official}}\\
+\cline{2-3} \cline{4-6} \cline{7-8}
+& \textbf{F1 Samples} & \textbf{F1 Macro} & \textbf{F1 Samples~} & \textbf{~F1 Macro~} & \textbf{Config} & \textbf{F1 Samples~} & \textbf{~F1 Macro}\\
+\hline
+BG & 0.381 (5) & 0.590 & 0.403 (4) & 0.575 & Narr. Inter. & 0.460 & 0.631\\
+EN & 0.433 (2) & 0.547 & 0.424 (2) & 0.518 & Full Inter. & 0.438  & 0.590\\
+HI & 0.435 (3) & 0.515  & \textbf{0.581} (\textbf{1}) & \textbf{0.673} & Full Inter.  & 0.535 & 0.569\\
+PT & 0.433 (2) & 0.679  & 0.385 (2) & 0.602 & Narr. Union   & 0.480  & 0.664\\
+RU & 0.410 (4) & 0.589 &  0.437 (3) & 0.556 & Narr. Union   & 0.518 & 0.709\\
+\hline
+\textbf{Average} & 0.418 (3.2) & 0.584 & 0.446 (\textbf{2.4}) & 0.585 & ---& 0.486 & 0.6326\\
+\hline
+\end{tabular}
+\end{table*}
+
+%\href{https://propaganda.math.unipd.it/semeval2025task10/leaderboardv3.html}{official leaderboard of SemEval Task 10}
+
+The results reveal several critical insights about the two architectures. On average, Agora achieves a +0.028 improvement in F1 Samples over the Actor-Critic pipeline (0.446 vs 0.418), while maintaining comparable F1 Macro performance (0.585 vs 0.584). More importantly, Agora's improved average ranking from 3.2 to 2.4 demonstrates superior competitive performance.
 
 \textbf{Hindi shows dramatic improvement.} The most striking result is Hindi, where Agora's Full Intersection configuration achieves 0.581 F1 Samples (+0.146 improvement, +33.6\%) and 0.673 F1 Macro, elevating the ranking from 3rd to 1st place. This substantial gain suggests that consensus-based ensembling is particularly effective for languages where single-agent predictions exhibit higher variance.
 
@@ -127,5 +158,5 @@ The comprehensive comparison reveals several critical insights about the two arc
 
 \textbf{Consistent ranking improvements validate ensemble approach.} Despite mixed F1 Samples results, Agora achieves better or equal rankings in all languages, most notably improving Bulgarian (5th→4th) and Russian (4th→3rd) beyond the dramatic Hindi improvement (3rd→1st). This validates that consensus-based ensembling provides more robust competitive performance across diverse multilingual settings.
 
-These results confirm that both approaches represent state-of-the-art methods for multilingual hierarchical narrative classification, with Agora's consensus mechanism achieving superior average performance (+0.028 F1 Samples) and competitive standings (2.4 vs 3.2 average rank), particularly excelling in languages with high prediction variance like Hindi.
+These top-ranked results confirm that Agora's consensus mechanism achieves superior average performance (+0.028 F1 Samples) compared to Actor-Critic approach and has competitive standings (2.4 vs 3.2 average rank), particularly excelling in languages with high prediction variance (Hindi).
 
