@@ -19,6 +19,7 @@ First, we propose a traceable self-refining pipeline. Second, upon identifying i
 Our \textbf{Actor-Critic Pipeline} aims to improve the reliability and transparency of a single agent's output. 
 In zero-shot classification context, simple label outputs lack traceability and auditability, and are susceptible to unverified hallucinations. To overcome this, we propose a multi-stage pipeline reframing the task from simple classification to evidence-grounded claim generation and validation.
 
+<<<<<<< HEAD
 Our implementation uses the LangGraph framework to structure the process as a cyclical state graph \citep{langgraph2024}. The pipeline configuration is managed by a \texttt{ConfigurableGraphBuilder}, allowing components like validation to be enabled or disabled and different LLMs to be assigned to specific nodes via a YAML file. For the Actor-Critic experiments, we use Gemini 2.5 Flash as the underlying LLM for both the Actor and Critic agents. The workflow proceeds through several stages, as illustrated in Figure~\ref{fig:actor_critic_pipeline}.
 
 \begin{figure}[!ht]
@@ -27,6 +28,9 @@ Our implementation uses the LangGraph framework to structure the process as a cy
 \caption{Actor-Critic pipeline architecture. HMLC task is decomposed into hierarchical stages where a Narrative Actor generates evidence-grounded claims, which are then validated by a Narrative Critic. Feedback loops enable iterative refinement before getting to sub-narrative classification.}
 \label{fig:actor_critic_pipeline}
 \end{figure}
+=======
+Our implementation uses the LangGraph framework to structure the process as a cyclical state graph \citep{langgraph2024}. The pipeline configuration is managed by a \texttt{ConfigurableGraphBuilder}, allowing components like validation to be enabled or disabled and different LLMs to be assigned to specific nodes via a YAML file. For the Actor-Critic experiments, we use Gemini 2.5 Flash as the underlying LLM for both the Actor and Critic agents. The workflow proceeds through several stages (detailed below and visualized in Appendix Figure~\ref{fig:actor_critic_pipeline}).
+>>>>>>> 86e8792dff0f763fe7ff81ceed3a56b3a6ba8d62
 
 \textbf{Category Classification.} 
 An initial node determines the document's domain (e.g. Climate Change (CC) or Ukraine-Russia-War (URW)) to focus subsequent stages on the relevant subset of the narrative taxonomy.
