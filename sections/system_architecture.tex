@@ -10,14 +10,7 @@ A promising recent approach to HMLC, which we refer to as H3Prompting, was intro
 
 Our first architectural exploration, the Actor-Critic Pipeline, sought to improve the reliability and transparency of a single agent's output. While zero-shot classification is powerful, simple label outputs lack traceability, making them difficult to audit and susceptible to unverified hallucinations. To overcome this, we designed a multi-stage pipeline that reframes the task from simple classification to evidence-grounded claim generation and validation.
 
-Our implementation uses the LangGraph framework to structure the process as a cyclical state graph \citep{langgraph2024}. The pipeline configuration is managed by a \texttt{ConfigurableGraphBuilder}, allowing components like validation to be enabled or disabled and different LLMs to be assigned to specific nodes via a YAML file. For the Actor-Critic experiments, we use Gemini 2.5 Flash as the underlying LLM for both the Actor and Critic agents. The workflow proceeds through several stages, as illustrated in Figure~\ref{fig:actor_critic_pipeline}.
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[height=20cm]{assets/diagrams/actor-critique.png}
-\caption{Actor-Critic validation pipeline architecture. The system decomposes HMLC into hierarchical stages where a Narrative Actor generates evidence-grounded claims, which are then validated by a Narrative Critic. Feedback loops enable iterative refinement before progressing to sub-narrative classification.}
-\label{fig:actor_critic_pipeline}
-\end{figure}
+Our implementation uses the LangGraph framework to structure the process as a cyclical state graph \citep{langgraph2024}. The pipeline configuration is managed by a \texttt{ConfigurableGraphBuilder}, allowing components like validation to be enabled or disabled and different LLMs to be assigned to specific nodes via a YAML file. For the Actor-Critic experiments, we use Gemini 2.5 Flash as the underlying LLM for both the Actor and Critic agents. The workflow proceeds through several stages (detailed below and visualized in Appendix Figure~\ref{fig:actor_critic_pipeline}).
 
 \subsubsection{Category Classification}
 
@@ -115,11 +108,4 @@ After all $N$ agents return their individual classifications, an Aggregation nod
 \item \textbf{Majority Vote:} The final label set includes any label proposed by more than half ($> N/2$) of the agents. This strategy provides a robust balance between precision and recall, filtering out stochastic, outlier classifications while retaining a strong consensus.
 \end{itemize}
 
-\begin{figure*}[!ht]
-\centering
-\includegraphics[height=12cm]{assets/diagrams/vote-based.png}
-\caption{Agora multi-agent ensemble architecture. The framework distributes the classification task to $N$ independent agents in parallel (Fan-Out), aggregates their results using a voting mechanism (Fan-In), and produces a final label set based on the chosen aggregation strategy (Union, Intersection, or Majority Vote).}
-\label{fig:vote_based_ensemble}
-\end{figure*}
-
-This ensemble approach directly addresses the single-point-of-failure issue observed in the Actor-Critic pipeline. Instead of relying on one critic's potentially noisy feedback, Agora relies on the statistical robustness of a majority decision, providing a more reliable and conceptually simpler method for improving classification quality.
+This ensemble approach directly addresses the single-point-of-failure issue observed in the Actor-Critic pipeline. Instead of relying on one critic's potentially noisy feedback, Agora relies on the statistical robustness of a majority decision, providing a more reliable and conceptually simpler method for improving classification quality. A detailed visualization of the Agora architecture is provided in Appendix Figure~\ref{fig:vote_based_ensemble}.

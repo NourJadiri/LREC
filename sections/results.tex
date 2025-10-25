@@ -49,6 +49,48 @@ To isolate the effect of the ensemble itself, we compared a single-agent Agora c
 
 This analysis provides a crucial insight: simply combining agent outputs is not enough. The Union strategy, which naively accepts all proposed labels, actually performs worse than a single agent by aggregating noise. In contrast, the consensus-based mechanisms deliver clear benefits. Both Majority Vote (+0.013) and Intersection (+0.035) significantly outperform the single agent. The Intersection strategy, requiring unanimous agreement, proves most effective for this task, successfully filtering out stochastic, low-confidence predictions to achieve the best overall performance. This demonstrates that the core advantage of Agora lies in its ability to systematically reduce noise through consensus.
 
+\subsection{Actor-Critic Validation Ablation: More Complexity Does Not Equal Better Performance}
+
+To further understand the refinement paradigm, we conducted a comprehensive ablation study of the Actor-Critic pipeline across the multilingual development set (178 documents). We evaluated three validation configurations: no validation (baseline single-pass), narrative-level validation only, and subnarrative-level validation only. Table~\ref{tab:actor_critique_ablation} presents the results.
+
+\begin{table*}[ht]
+\centering
+\caption{Comprehensive ablation study of Actor-Critic pipeline validation configurations across multilingual development set (178 documents). Results show F1 Coarse (narratives) and F1 Sample (subnarratives) for three validation strategies. Notably, the no-validation baseline outperforms both validation approaches on average.}
+\label{tab:actor_critique_ablation}
+\small
+\begin{tabular}{lccccc}
+\hline
+\textbf{Language} & \textbf{Validation} & \textbf{F1 Coarse} & \textbf{F1 Sample} & \textbf{$\Delta$ F1 Coarse} & \textbf{$\Delta$ F1 Sample} \\
+\hline
+BG & None & 0.5799 & 0.4104 & --- & --- \\
+   & Narrative & 0.5721 & 0.4049 & -0.0078 & -0.0055 \\
+   & Subnarrative & 0.5521 & 0.4211 & -0.0278 & +0.0107 \\
+\hline
+EN & None & 0.5132 & 0.3815 & --- & --- \\
+   & Narrative & 0.5241 & 0.3675 & +0.0109 & -0.0140 \\
+   & Subnarrative & 0.5319 & 0.4166 & +0.0187 & +0.0351 \\
+\hline
+HI & None & 0.4715 & 0.2976 & --- & --- \\
+   & Narrative & 0.4217 & 0.3082 & -0.0498 & +0.0106 \\
+   & Subnarrative & 0.4354 & 0.2687 & -0.0361 & -0.0289 \\
+\hline
+PT & None & 0.7489 & 0.4737 & --- & --- \\
+   & Narrative & 0.7335 & 0.4681 & -0.0154 & -0.0056 \\
+   & Subnarrative & 0.6904 & 0.4367 & -0.0585 & -0.0370 \\
+\hline
+RU & None & 0.6958 & 0.4754 & --- & --- \\
+   & Narrative & 0.7080 & 0.4786 & +0.0122 & +0.0032 \\
+   & Subnarrative & 0.6693 & 0.5078 & -0.0265 & +0.0324 \\
+\hline
+\textbf{Average} & None & \textbf{0.6019} & \textbf{0.4077} & --- & --- \\
+                 & Narrative & \textbf{0.5919} & \textbf{0.4055} & \textbf{-0.0100} & \textbf{-0.0022} \\
+                 & Subnarrative & \textbf{0.5758} & \textbf{0.4102} & \textbf{-0.0261} & \textbf{+0.0025} \\
+\hline
+\end{tabular}
+\end{table*}
+
+The ablation study reveals a counter-intuitive but critical finding: \textbf{adding validation mechanisms generally degrades performance rather than improving it}. On average, the no-validation baseline achieves the highest F1 Coarse (0.6019) and competitive F1 Sample (0.4077), while both validation strategies show negative average deltas for F1 Coarse (-0.0100 for narrative, -0.0261 for subnarrative). Russian is the only language where narrative validation consistently improves both metrics (+0.0122, +0.0032), while Portuguese experiences the most dramatic degradation (-0.0585, -0.0370 with subnarrative validation). This pattern suggests that critique agents systematically over-correct the base model's predictions, introducing noise rather than filtering it. The finding directly motivates our shift to Agora's consensus-based approach, which achieves improvements through diversity and aggregation rather than iterative refinement that risks over-correction.
+
 \subsection{State-of-the-Art Performance in SemEval-2025}
 
 The ultimate validation of our approaches comes from their performance in the official SemEval-2025 Task 10 competition. We submitted two architectures: the Actor-Critic pipeline (Gemini 2.5 Flash) and the Agora multi-agent ensemble (GPT-5-nano). Table~\ref{tab:semeval_comprehensive} presents a comprehensive comparison across all five languages.
